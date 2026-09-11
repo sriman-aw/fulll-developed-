@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confluence — Academia–Industry Collaboration Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141F2C;
+    --ink-2:#1D2C3D;
+    --paper:#ECE6D6;
+    --paper-2:#F6F2E8;
+    --gold:#B3862C;
+    --gold-soft:#D9B15C;
+    --green:#2F6F4E;
+    --rust:#9C4A32;
+    --line:rgba(20,32,46,0.16);
+    --line-light:rgba(246,242,232,0.22);
+    --text:#181410;
+    --text-soft:#4B463C;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  h1,h2,h3{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  .tick{position:relative;}
+  .tick::before,.tick::after{content:"";position:absolute;width:10px;height:10px;border-color:currentColor;border-style:solid;opacity:.55;}
+  .tick::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+  .tick::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:40;
+    background:rgba(20,31,44,0.94);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line-light);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--paper-2);}
+  .brand svg{width:26px;height:26px;}
+  .brand span{font-family:'Source Serif 4',serif;font-size:19px;font-weight:600;}
+  .navlinks{display:flex;gap:28px;font-size:14px;color:var(--paper-2);opacity:.85;}
+  .navlinks a{text-decoration:none;}
+  .navlinks a:hover{color:var(--gold-soft);}
+  .navcta{
+    background:var(--gold);color:#171008;padding:9px 18px;border-radius:2px;
+    font-size:14px;font-weight:600;text-decoration:none;
+  }
+
+  /* HERO */
+  header.hero{
+    background:
+      radial-gradient(circle at 82% 18%, rgba(179,134,44,0.16), transparent 55%),
+      linear-gradient(var(--ink), var(--ink-2));
+    color:var(--paper-2);
+    padding:88px 0 64px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--line-light);
+  }
+  header.hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+  .hero-eyebrow{
+    font-size:13px;color:var(--gold-soft);margin-bottom:16px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .hero-eyebrow .dot{width:6px;height:6px;background:var(--gold-soft);border-radius:50%;}
+  h1.headline{font-size:clamp(34px,4vw,50px);line-height:1.08;max-width:11ch;}
+  h1.headline em{font-style:italic;color:var(--gold-soft);}
+  .hero p.lede{margin-top:18px;max-width:44ch;color:#CBC5B6;font-size:16.5px;}
+  .hero-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--gold);color:#171008;padding:13px 22px;border-radius:2px;
+    font-weight:600;font-size:14.5px;text-decoration:none;border:1px solid var(--gold);
+    cursor:pointer;
+  }
+  .btn-ghost{
+    padding:13px 22px;border-radius:2px;font-weight:600;font-size:14.5px;text-decoration:none;
+    border:1px solid rgba(246,242,232,0.35);color:var(--paper-2);
+  }
+  .hero-stats{display:flex;gap:28px;margin-top:38px;color:#B9B2A0;font-size:13px;}
+  .hero-stats b{display:block;color:var(--paper-2);font-family:'Source Serif 4',serif;font-size:22px;font-weight:600;}
+
+  .diagram{position:relative;}
+  .diagram svg{width:100%;height:auto;overflow:visible;}
+  .node-label{font-family:'IBM Plex Sans';font-size:12.5px;font-weight:600;fill:#F6F2E8;}
+  .node-sub{font-family:'IBM Plex Mono';font-size:9.5px;fill:#9FB8AC;}
+  .flow-dash{stroke-dasharray:6 7;animation:dashmove 3.4s linear infinite;}
+  @keyframes dashmove{to{stroke-dashoffset:-130;}}
+
+  section{padding:74px 0;}
+  .section-head{max-width:640px;margin-bottom:44px;}
+  .kicker{
+    font-size:13px;font-weight:600;color:var(--rust);letter-spacing:.02em;margin-bottom:10px;
+  }
+  h2{font-size:clamp(26px,3vw,34px);}
+  .section-head p{color:var(--text-soft);margin-top:12px;font-size:15.5px;}
+
+  /* HOW IT WORKS */
+  .flow{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border-top:1px solid var(--line);border-left:1px solid var(--line);
+  }
+  .flow-step{
+    border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:26px 22px;background:var(--paper-2);position:relative;
+  }
+  .flow-step .num{font-family:'IBM Plex Mono';font-size:12px;color:var(--rust);}
+  .flow-step h3{font-size:17px;margin-top:10px;font-weight:600;}
+  .flow-step p{font-size:13.8px;color:var(--text-soft);margin-top:8px;}
+
+  /* ROLE DEMO */
+  .role-section{background:var(--ink);color:var(--paper-2);}
+  .role-section .kicker{color:var(--gold-soft);}
+  .role-section .section-head p{color:#C7C1B2;}
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line-light);margin-bottom:32px;flex-wrap:wrap;}
+  .tab{
+    padding:12px 18px;font-size:14px;font-weight:600;background:none;border:none;color:#9C9686;
+    cursor:pointer;border-bottom:2px solid transparent;font-family:'IBM Plex Sans';
+  }
+  .tab.active{color:var(--paper-2);border-bottom-color:var(--gold);}
+  .panel{display:none;}
+  .panel.active{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;}
+  .card{
+    background:var(--ink-2);border:1px solid var(--line-light);padding:24px;border-radius:2px;
+  }
+  .card h4{font-size:15px;font-weight:600;margin-bottom:4px;}
+  .card .muted{color:#9C9686;font-size:13px;margin-bottom:18px;}
+  .gap-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line-light);font-size:13.5px;}
+  .gap-row:first-of-type{border-top:none;}
+  .pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;}
+  .pill.gap{background:rgba(156,74,50,0.25);color:#E6B7A6;}
+  .pill.strong{background:rgba(47,111,78,0.28);color:#A9D7BB;}
+  .match{display:flex;justify-content:space-between;font-size:13.5px;padding:11px 0;border-top:1px solid var(--line-light);}
+  .match:first-of-type{border-top:none;}
+  .match-bar{height:5px;background:rgba(246,242,232,0.14);border-radius:3px;margin-top:6px;overflow:hidden;}
+  .match-bar span{display:block;height:100%;background:var(--gold);}
+  .listing{padding:13px 0;border-top:1px solid var(--line-light);font-size:13.5px;}
+  .listing:first-of-type{border-top:none;}
+  .listing .tags{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;}
+  .tag{font-size:11px;padding:2px 8px;border:1px solid var(--line-light);border-radius:2px;color:#C7C1B2;}
+  .barchart{display:flex;align-items:flex-end;gap:10px;height:150px;margin-top:10px;}
+  .barchart .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;}
+  .barchart .bar{width:100%;background:linear-gradient(var(--gold-soft),var(--gold));border-radius:2px 2px 0 0;}
+  .barchart .lbl{font-size:10.5px;color:#9C9686;font-family:'IBM Plex Mono';}
+  .field-label{display:block;font-size:11.5px;color:#9C9686;margin-bottom:6px;font-weight:600;}
+  .field-input{
+    width:100%;background:var(--ink);border:1px solid var(--line-light);color:var(--paper-2);
+    padding:10px 11px;border-radius:2px;font-family:'IBM Plex Sans';font-size:13.5px;
+  }
+  .field-input:focus{outline:1px solid var(--gold-soft);}
+  @media (max-width:860px){
+    #panel-student .card[style]{grid-template-columns:1fr 1fr !important;}
+  }
+
+  /* FEATURES */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .feat{background:var(--paper-2);padding:28px 24px;}
+  .feat.tall{grid-row:span 2;}
+  .feat h3{font-size:16px;font-weight:600;}
+  .feat p{font-size:13.8px;color:var(--text-soft);margin-top:8px;}
+  .feat .idx{font-family:'IBM Plex Mono';font-size:11px;color:var(--rust);margin-bottom:10px;display:block;}
+
+  /* CTA + FOOTER */
+  .cta{
+    background:linear-gradient(var(--ink),var(--ink-2));color:var(--paper-2);
+    padding:70px 0;text-align:center;border-top:1px solid var(--line-light);
+  }
+  .cta h2{font-size:clamp(26px,3.4vw,38px);max-width:20ch;margin:0 auto;}
+  .cta p{color:#C7C1B2;margin-top:14px;}
+  .cta-actions{display:flex;gap:14px;justify-content:center;margin-top:28px;flex-wrap:wrap;}
+  footer{background:var(--ink);color:#9C9686;padding:34px 0;font-size:13px;border-top:1px solid var(--line-light);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+  @media (max-width:860px){
+    header.hero .wrap{grid-template-columns:1fr;}
+    .panel.active{grid-template-columns:1fr;}
+    .flow{grid-template-columns:1fr 1fr;}
+    .feat-grid{grid-template-columns:1fr;}
+    .feat.tall{grid-row:auto;}
+    .navlinks{display:none;}
+  }
+
+  /* ============ SCREENS / AUTH / APP SHELL ============ */
+  .screen.hidden{display:none;}
+  .navlink-btn{background:none;border:none;font:inherit;color:inherit;cursor:pointer;padding:0;}
+
+  .login-screen{min-height:100vh;background:var(--ink);color:var(--paper-2);display:flex;flex-direction:column;}
+  .login-topbar{padding:22px 32px;}
+  .login-topbar button{background:none;border:none;color:#9C9686;font-family:'IBM Plex Sans';font-size:13.5px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  .login-topbar button:hover{color:var(--paper-2);}
+  .login-body{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .login-card{width:100%;max-width:400px;background:var(--ink-2);border:1px solid var(--line-light);border-radius:2px;padding:34px;}
+  .login-card h2{font-size:23px;}
+  .login-card .sub{color:#9C9686;font-size:13.5px;margin-top:6px;margin-bottom:24px;}
+  .role-switch{display:flex;gap:6px;margin-bottom:26px;border:1px solid var(--line-light);border-radius:2px;padding:4px;}
+  .role-switch button{flex:1;background:none;border:none;padding:9px;border-radius:2px;font-size:13px;font-weight:600;color:#9C9686;cursor:pointer;font-family:'IBM Plex Sans';}
+  .role-switch button.active{background:var(--gold);color:#171008;}
+  .login-field{margin-bottom:16px;}
+  .login-field label{display:block;font-size:12px;color:#9C9686;margin-bottom:6px;font-weight:600;}
+  .login-field input, .login-field select{
+    width:100%;background:var(--ink);border:1px solid var(--line-light);color:var(--paper-2);
+    padding:11px 12px;border-radius:2px;font-family:'IBM Plex Sans';font-size:14px;
+  }
+  .login-field input:focus, .login-field select:focus{outline:1px solid var(--gold-soft);}
+  .btn-block{width:100%;text-align:center;cursor:pointer;border:1px solid var(--gold);}
+  .login-error{display:none;background:rgba(156,74,50,0.22);color:#E6B7A6;font-size:12.5px;padding:9px 12px;border-radius:2px;margin-bottom:14px;}
+  .login-error.show{display:block;}
+  .demo-note{font-size:12px;color:#9C9686;margin-top:20px;border-top:1px solid var(--line-light);padding-top:16px;}
+  .demo-fill{background:none;border:1px dashed var(--gold-soft);color:var(--gold-soft);font-size:12px;padding:7px 12px;border-radius:2px;margin-top:8px;cursor:pointer;width:100%;font-family:'IBM Plex Mono';}
+
+  .app-shell{min-height:100vh;display:flex;background:var(--paper);}
+  .app-sidebar{width:230px;flex-shrink:0;background:var(--ink);color:var(--paper-2);display:flex;flex-direction:column;padding:26px 18px;}
+  .app-sidebar .brand-mark{font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;margin-bottom:2px;}
+  .app-sidebar .brand-sub{font-size:11px;color:#9C9686;font-family:'IBM Plex Mono';letter-spacing:.03em;margin-bottom:30px;}
+  .app-nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+  .app-nav button{
+    text-align:left;background:none;border:none;color:#C7C1B2;font-family:'IBM Plex Sans';font-size:14px;
+    padding:11px 13px;border-radius:2px;cursor:pointer;font-weight:500;
+  }
+  .app-nav button.active{background:var(--gold);color:#171008;font-weight:600;}
+  .app-nav button:not(.active):hover{background:var(--line-light);}
+  .app-userbox{border-top:1px solid var(--line-light);padding-top:16px;}
+  .app-userbox .u-name{font-size:13.5px;font-weight:600;}
+  .app-userbox .u-sub{font-size:11.5px;color:#9C9686;margin-bottom:12px;}
+  .app-userbox button{background:none;border:1px solid var(--line-light);color:var(--paper-2);font-size:12.5px;padding:7px 10px;border-radius:2px;cursor:pointer;width:100%;}
+
+  .app-content{flex:1;padding:38px 44px;max-width:900px;}
+  .app-panel{display:none;}
+  .app-panel.active{display:block;}
+  .app-content h2{font-size:24px;}
+  .app-content .sub{color:var(--text-soft);font-size:14px;margin-top:6px;margin-bottom:28px;}
+  .content-topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+
+  .app-card{background:var(--paper-2);border:1px solid var(--line);border-radius:2px;padding:24px;margin-bottom:18px;}
+  .app-card h4{font-size:15.5px;margin-bottom:4px;}
+  .app-card .muted{color:var(--text-soft);font-size:13px;margin-bottom:16px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .form-label{display:block;font-size:11.5px;color:var(--text-soft);margin-bottom:6px;font-weight:600;}
+  .form-input{
+    width:100%;background:var(--paper);border:1px solid var(--line);color:var(--text);
+    padding:10px 11px;border-radius:2px;font-family:'IBM Plex Sans';font-size:13.5px;
+  }
+  .form-input:focus{outline:1px solid var(--gold);}
+  textarea.form-input{resize:vertical;min-height:130px;font-family:'IBM Plex Sans';line-height:1.5;}
+
+  .skill-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line);}
+  .skill-row:first-of-type{border-top:none;}
+  .skill-row .name{font-size:14px;}
+  .skill-select{background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:7px 10px;font-size:13px;font-family:'IBM Plex Sans';color:var(--text);}
+
+  .catalog-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-top:1px solid var(--line);font-size:14px;}
+  .catalog-row:first-of-type{border-top:none;}
+  .catalog-edit{display:flex;align-items:center;gap:8px;flex:1;margin-right:14px;}
+  .catalog-edit input{min-width:0;flex:1;}
+  .icon-x{background:none;border:none;color:var(--rust);cursor:pointer;font-size:13px;font-family:'IBM Plex Mono';}
+  .add-skill-row{display:flex;gap:10px;margin-top:16px;}
+  .add-skill-row input{flex:1;}
+
+  .stu-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .stu-table th{text-align:left;font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.03em;padding:0 10px 10px;font-weight:600;}
+  .stu-table td{padding:12px 10px;border-top:1px solid var(--line);}
+  .stu-table tr:first-child td{border-top:none;}
+  .row-actions{display:flex;gap:8px;}
+  .row-actions button{background:none;border:1px solid var(--line);color:var(--text-soft);font-size:12px;padding:5px 10px;border-radius:2px;cursor:pointer;}
+  .row-actions button:hover{border-color:var(--rust);color:var(--rust);}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(20,31,44,0.6);display:flex;align-items:center;justify-content:center;z-index:80;padding:20px;}
+  .modal-overlay.hidden{display:none;}
+  .modal-box{background:var(--paper-2);border-radius:2px;padding:28px;width:100%;max-width:420px;border:1px solid var(--line);}
+  .modal-box h3{font-size:18px;margin-bottom:18px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  .btn-outline{background:none;border:1px solid var(--line);color:var(--text);padding:10px 16px;border-radius:2px;font-size:13.5px;font-weight:600;cursor:pointer;}
+  .btn-sm{padding:9px 15px;font-size:13px;border:none;cursor:pointer;}
+  .metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+  .metric{background:var(--paper-2);border:1px solid var(--line);padding:18px;}
+  .metric .value{font-family:'Source Serif 4',serif;font-size:28px;color:var(--ink);}
+  .metric .label{font-size:12px;color:var(--text-soft);margin-top:2px;}
+  .check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
+  .skill-check{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);padding:9px 10px;font-size:13px;}
+  .skill-check input{accent-color:var(--gold);}
+  .match-score{font-family:'IBM Plex Mono';font-size:12px;color:var(--green);font-weight:600;}
+
+  .question-block{padding:16px 0;border-top:1px solid var(--line);}
+  .question-block:first-of-type{border-top:none;}
+  .question-text{font-size:14px;font-weight:600;margin-bottom:10px;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option-row{display:flex;align-items:center;gap:9px;font-size:13.5px;background:var(--paper);border:1px solid var(--line);padding:9px 11px;border-radius:2px;cursor:pointer;}
+  .option-row input{accent-color:var(--gold);}
+  .question-editor{border-top:1px solid var(--line);padding:14px 0;}
+  .question-editor:first-of-type{border-top:none;}
+  .question-editor-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .option-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .option-editor-row{display:flex;align-items:center;gap:8px;}
+  .option-editor-row input[type=radio]{accent-color:var(--gold);flex-shrink:0;}
+  @media (max-width:700px){
+    .app-sidebar{width:190px;}
+    .app-content{padding:28px 20px;}
+    .metric-grid,.check-grid{grid-template-columns:1fr;}
+    .stu-table{display:block;overflow-x:auto;white-space:nowrap;}
+    .option-editor-grid{grid-template-columns:1fr;}
+  }
+
+  .toast{position:fixed;bottom:26px;right:26px;background:var(--ink);color:var(--paper-2);padding:13px 20px;border-radius:2px;font-size:13.5px;border:1px solid var(--gold);z-index:90;display:none;}
+  .toast.show{display:block;}
+
+</style>
+</head>
+<body>
+
+<div id="landing-screen" class="screen">
+<nav>
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.6" fill="#D9B15C"/><circle cx="4" cy="5" r="1.8" fill="#F6F2E8"/><circle cx="20" cy="5" r="1.8" fill="#F6F2E8"/><circle cx="12" cy="21" r="1.8" fill="#F6F2E8"/><path d="M12 12L4 5M12 12L20 5M12 12L12 21" stroke="#5A6B72" stroke-width="1"/></svg>
+      <span>Confluence</span>
+    </div>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#roles">For every role</a>
+      <a href="#features">Platform</a>
+      <button class="navlink-btn" onclick="showLogin()">Sign in</button>
+    </div>
+    <a class="navcta" href="#roles">See a dashboard</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="hero-eyebrow"><span class="dot"></span>ACADEMIA–INDUSTRY COLLABORATION PORTAL</div>
+      <h1 class="headline">Where skills, <em>classrooms</em>, and careers meet.</h1>
+      <p class="lede">Confluence gives students a live map of the skills they're missing, gives industry a direct line to job-ready candidates, and gives academicians visibility into the training and research industry actually needs.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#roles">Explore the four dashboards</a>
+        <a class="btn-ghost" href="#how">How it works</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>3</b>groups, one record</div>
+        <div><b>1</b>verified skill profile</div>
+        <div><b>0</b>spreadsheets in between</div>
+      </div>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 0 480 380">
+        <path d="M240,190 C170,140 120,90 90,55" stroke="#3A4C57" stroke-width="1.4" fill="none"/>
+        <path d="M240,190 C310,140 360,90 390,55" stroke="#3A4C57" stroke-width="1.4" fill="none"/>
+        <path d="M240,190 C240,250 240,300 240,340" stroke="#3A4C57" stroke-width="1.4" fill="none"/>
+        <path class="flow-dash" d="M240,190 C170,140 120,90 90,55" stroke="#D9B15C" stroke-width="1.6" fill="none"/>
+        <path class="flow-dash" d="M240,190 C310,140 360,90 390,55" stroke="#A9D7BB" stroke-width="1.6" fill="none"/>
+        <path class="flow-dash" d="M240,190 C240,250 240,300 240,340" stroke="#E6B7A6" stroke-width="1.6" fill="none"/>
+
+        <circle cx="240" cy="190" r="34" fill="#1D2C3D" stroke="#B3862C" stroke-width="1.5"/>
+        <text x="240" y="187" text-anchor="middle" class="node-label">Confluence</text>
+        <text x="240" y="200" text-anchor="middle" class="node-sub">skill graph</text>
+
+        <circle cx="90" cy="48" r="26" fill="#1D2C3D" stroke="#5A6B72" stroke-width="1.2"/>
+        <text x="90" y="45" text-anchor="middle" class="node-label">Students</text>
+        <text x="90" y="58" text-anchor="middle" class="node-sub">assessments</text>
+
+        <circle cx="390" cy="48" r="26" fill="#1D2C3D" stroke="#5A6B72" stroke-width="1.2"/>
+        <text x="390" y="45" text-anchor="middle" class="node-label">Industry</text>
+        <text x="390" y="58" text-anchor="middle" class="node-sub">openings</text>
+
+        <circle cx="240" cy="352" r="26" fill="#1D2C3D" stroke="#5A6B72" stroke-width="1.2"/>
+        <text x="240" y="349" text-anchor="middle" class="node-label">Academia</text>
+        <text x="240" y="362" text-anchor="middle" class="node-sub">FDPs · research</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">HOW IT WORKS</div>
+      <h2>One assessment, four things it unlocks.</h2>
+      <p>A student's skill profile is the record everything else reads from — what they're recommended, who can find them, and what they can prove they've done.</p>
+    </div>
+    <div class="flow">
+      <div class="flow-step tick"><div class="num">01</div><h3>Assess</h3><p>A questionnaire and aptitude check scores technical and soft skills against current industry benchmarks.</p></div>
+      <div class="flow-step tick"><div class="num">02</div><h3>Map</h3><p>The gap between a student's profile and their target role becomes a ranked list of courses, certifications, and roles.</p></div>
+      <div class="flow-step tick"><div class="num">03</div><h3>Match</h3><p>Internships, FDPs, and placements are ranked by fit, not just by date posted — for students and academicians alike.</p></div>
+      <div class="flow-step tick"><div class="num">04</div><h3>Prove</h3><p>Completed work lands in a verified portfolio institutions and recruiters can check without a phone call.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="roles" class="role-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">FOUR LOGINS, ONE DATASET</div>
+      <h2>The same platform reads differently depending who's asking.</h2>
+      <p>A sample of what each dashboard shows on day one.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="student">Student</button>
+      <button class="tab" data-tab="industry">Industry</button>
+      <button class="tab" data-tab="academic">Academician</button>
+      <button class="tab" data-tab="institution">Institution</button>
+    </div>
+
+    <div class="panel active" id="panel-student">
+      <div class="card" style="grid-column:1 / -1;margin-bottom:22px;display:grid;grid-template-columns:1.3fr 1fr 0.8fr 0.8fr auto;gap:14px;align-items:end;">
+        <div>
+          <label class="field-label">Name</label>
+          <input id="stu-name" class="field-input" type="text" value="Priya N." placeholder="Full name">
+        </div>
+        <div>
+          <label class="field-label">Department</label>
+          <select id="stu-dept" class="field-input">
+            <option>Computer Science (CSE)</option>
+            <option>Information Technology (IT)</option>
+            <option>Electronics & Comm. (ECE)</option>
+            <option>Mechanical (MECH)</option>
+            <option>Civil</option>
+            <option>Electrical (EEE)</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Year</label>
+          <select id="stu-year" class="field-input">
+            <option>1st year</option>
+            <option>2nd year</option>
+            <option selected>3rd year</option>
+            <option>4th year</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Target role</label>
+          <select id="stu-role" class="field-input">
+            <option selected>Backend Developer</option>
+            <option>Frontend Developer</option>
+            <option>Data Analyst</option>
+            <option>Embedded Systems Engineer</option>
+            <option>Site Engineer</option>
+          </select>
+        </div>
+        <button id="stu-update" class="btn-primary" style="border-radius:2px;cursor:pointer;">Update profile</button>
+      </div>
+      <div class="card" style="grid-column:1 / -1;">
+        <h4>Recommended next</h4>
+        <div class="muted">Ranked by gap closed, not popularity</div>
+        <div class="listing">
+          <strong>System Design for Interviews — cert.</strong> · 4 weeks
+          <div class="tags"><span class="tag">closes: system design</span><span class="tag">free</span></div>
+        </div>
+        <div class="listing">
+          <strong>Backend Intern — Fintech startup, Chennai</strong>
+          <div class="tags"><span class="tag">82% skill match</span><span class="tag">stipend ₹15k/mo</span></div>
+        </div>
+        <div class="listing">
+          <strong>AWS Cloud Practitioner — industry-run workshop</strong>
+          <div class="tags"><span class="tag">closes: cloud deployment</span><span class="tag">2 days</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-industry">
+      <div class="card">
+        <h4>Post an opening</h4>
+        <div class="muted">Backend Developer — Internship, 6 months</div>
+        <div class="gap-row"><span>Required</span><span>DSA, SQL, REST APIs</span></div>
+        <div class="gap-row"><span>Preferred</span><span>AWS, system design</span></div>
+        <div class="gap-row"><span>Candidates matched so far</span><span class="pill strong">41</span></div>
+      </div>
+      <div class="card">
+        <h4>Top-matched candidates</h4>
+        <div class="muted">Sorted by verified skill fit</div>
+        <div class="match"><span>Priya N. — CSE, 3rd yr</span><span>82%</span></div>
+        <div class="match-bar"><span style="width:82%"></span></div>
+        <div class="match"><span>Arjun K. — CSE, 4th yr</span><span>77%</span></div>
+        <div class="match-bar"><span style="width:77%"></span></div>
+        <div class="match"><span>Divya S. — IT, 3rd yr</span><span>71%</span></div>
+        <div class="match-bar"><span style="width:71%"></span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-academic">
+      <div class="card">
+        <h4>Open for faculty</h4>
+        <div class="muted">Industrial training & consultancy</div>
+        <div class="listing">
+          <strong>FDP: Applied ML for Engineering Faculty</strong>
+          <div class="tags"><span class="tag">5-day residential</span><span class="tag">IIT partner</span></div>
+        </div>
+        <div class="listing">
+          <strong>Consultancy — process optimisation study</strong>
+          <div class="tags"><span class="tag">manufacturing client</span><span class="tag">3 months</span></div>
+        </div>
+        <div class="listing">
+          <strong>Joint research grant — embedded systems</strong>
+          <div class="tags"><span class="tag">deadline in 12 days</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Your students, at a glance</h4>
+        <div class="gap-row"><span>Advisees with a completed skill profile</span><span class="pill strong">58 / 62</span></div>
+        <div class="gap-row"><span>Currently in an internship</span><span class="pill strong">21</span></div>
+        <div class="gap-row"><span>Common gap this term</span><span class="pill gap">System design</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-institution">
+      <div class="card">
+        <h4>Placement readiness by department</h4>
+        <div class="barchart">
+          <div class="col"><div class="bar" style="height:88%"></div><span class="lbl">CSE</span></div>
+          <div class="col"><div class="bar" style="height:71%"></div><span class="lbl">ECE</span></div>
+          <div class="col"><div class="bar" style="height:64%"></div><span class="lbl">MECH</span></div>
+          <div class="col"><div class="bar" style="height:52%"></div><span class="lbl">CIVIL</span></div>
+          <div class="col"><div class="bar" style="height:76%"></div><span class="lbl">IT</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Skill demand trend, this term</h4>
+        <div class="gap-row"><span>Cloud & DevOps</span><span class="pill gap">↑ 34%</span></div>
+        <div class="gap-row"><span>Data analysis</span><span class="pill gap">↑ 19%</span></div>
+        <div class="gap-row"><span>Manual testing</span><span class="pill strong">↓ 11%</span></div>
+        <div class="gap-row"><span>Institution-wide internship rate</span><span class="pill strong">67%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">PLATFORM</div>
+      <h2>Built to hold four roles without four separate systems.</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat tall">
+        <span class="idx">ACCESS</span>
+        <h3>Role-based by default</h3>
+        <p>A student, an academician, a recruiter, and an institution admin see the same underlying record — but only the fields their role needs, editable only where their role permits.</p>
+      </div>
+      <div class="feat">
+        <span class="idx">RECORDS</span>
+        <h3>Secure document vault</h3>
+        <p>Resumes, certificates, internship reports, and transcripts, verified once and reused everywhere on the platform.</p>
+      </div>
+      <div class="feat">
+        <span class="idx">COLLAB</span>
+        <h3>Mentorship & live projects</h3>
+        <p>Guest lectures, innovation challenges, and industry-sponsored live projects are scheduled and tracked the same way an internship is.</p>
+      </div>
+      <div class="feat">
+        <span class="idx">CONNECT</span>
+        <h3>Works with what you already use</h3>
+        <p>Syncs with certification providers and institutional academic databases — skill records don't need re-entry each term.</p>
+      </div>
+      <div class="feat">
+        <span class="idx">INSIGHT</span>
+        <h3>Analytics that reach policy</h3>
+        <p>Placement outcomes and skill-demand trends roll up to a level institutions and policymakers can actually act on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Every student's next step should be obvious. So should every recruiter's next hire.</h2>
+    <p>Confluence connects academia and industry on a live skill graph.</p>
+    <div class="cta-actions">
+      <a class="btn-primary" href="#roles">Revisit the dashboards</a>
+      <a class="btn-ghost" href="#how">Read how it works</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Confluence — Academia–Industry Collaboration Portal</span>
+    <span>Connected to FastAPI & SQLite backend</span>
+  </div>
+</footer>
+</div><!-- /landing-screen -->
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="login-screen" class="screen hidden login-screen">
+  <div class="login-topbar">
+    <button onclick="showLanding()">&larr; Back to Confluence</button>
+  </div>
+  <div class="login-body">
+    <div class="login-card">
+      <div class="role-switch">
+        <button type="button" id="role-btn-student" class="active" onclick="setLoginRole('student')">Student</button>
+        <button type="button" id="role-btn-recruiter" onclick="setLoginRole('recruiter')">Recruiter</button>
+        <button type="button" id="role-btn-admin" onclick="setLoginRole('admin')">Admin</button>
+      </div>
+
+      <div id="student-login-wrap">
+        <h2>Student sign in</h2>
+        <p class="sub">Update your skill profile and keep your resume current.</p>
+        <div class="login-error" id="student-login-error">Invalid ID or password. Try the demo login below.</div>
+        <form id="student-login-form" onsubmit="return handleStudentLogin(event)">
+          <div class="login-field"><label>Student ID</label><input type="text" id="sl-id" placeholder="e.g. S001" required></div>
+          <div class="login-field"><label>Password</label><input type="password" id="sl-pass" placeholder="••••••••" required></div>
+          <button type="submit" class="btn-primary btn-block">Sign in</button>
+        </form>
+        <div class="demo-note">Demo login — <b>ID:</b> S001 &nbsp; <b>Password:</b> student123</div>
+        <button type="button" class="demo-fill" onclick="fillStudentDemo()">Autofill demo credentials</button>
+      </div>
+
+      <div id="recruiter-login-wrap" style="display:none;">
+        <h2>Recruiter sign in</h2>
+        <p class="sub">Find verified candidates and create skill-based openings.</p>
+        <div class="login-error" id="recruiter-login-error">Invalid recruiter ID or password. Try the demo login below.</div>
+        <form id="recruiter-login-form" onsubmit="return handleRecruiterLogin(event)">
+          <div class="login-field"><label>Recruiter ID</label><input type="text" id="rl-id" placeholder="recruiter" required></div>
+          <div class="login-field"><label>Password</label><input type="password" id="rl-pass" placeholder="••••••••" required></div>
+          <div class="login-field">
+            <label>Company</label>
+            <input type="text" id="rl-company" placeholder="e.g. Fintech Solutions Pvt Ltd" required>
+          </div>
+          <button type="submit" class="btn-primary btn-block">Sign in</button>
+        </form>
+        <div class="demo-note">Demo login — <b>ID:</b> recruiter &nbsp; <b>Password:</b> recruit2026</div>
+        <button type="button" class="demo-fill" onclick="fillRecruiterDemo()">Autofill demo credentials</button>
+      </div>
+
+      <div id="admin-login-wrap" style="display:none;">
+        <h2>Admin sign in</h2>
+        <p class="sub">Manage the skill catalog and student accounts.</p>
+        <div class="login-error" id="admin-login-error">Invalid ID or password. Try the demo login below.</div>
+        <form id="admin-login-form" onsubmit="return handleAdminLogin(event)">
+          <div class="login-field"><label>Admin ID</label><input type="text" id="al-id" placeholder="admin" required></div>
+          <div class="login-field"><label>Password</label><input type="password" id="al-pass" placeholder="••••••••" required></div>
+          <button type="submit" class="btn-primary btn-block">Sign in</button>
+        </form>
+        <div class="demo-note">Demo login — <b>ID:</b> admin &nbsp; <b>Password:</b> admin2026</div>
+        <button type="button" class="demo-fill" onclick="fillAdminDemo()">Autofill demo credentials</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STUDENT APP ============ -->
+<div id="student-screen" class="screen hidden app-shell">
+  <aside class="app-sidebar">
+    <div class="brand-mark">Confluence</div>
+    <div class="brand-sub">STUDENT PORTAL</div>
+    <nav class="app-nav">
+      <button class="active" data-panel="sa-profile" onclick="switchStudentPanel(this)">My profile</button>
+      <button data-panel="sa-personal" onclick="switchStudentPanel(this)">Personal details</button>
+      <button data-panel="sa-skills" onclick="switchStudentPanel(this)">My skills</button>
+      <button data-panel="sa-tests" onclick="switchStudentPanel(this)">Mock tests</button>
+      <button data-panel="sa-resume" onclick="switchStudentPanel(this)">Resume</button>
+    </nav>
+    <div class="app-userbox">
+      <div class="u-name" id="sa-user-name">—</div>
+      <div class="u-sub" id="sa-user-sub">—</div>
+      <button onclick="studentLogout()">Log out</button>
+    </div>
+  </aside>
+  <main class="app-content">
+
+    <div class="app-panel active" id="sa-profile">
+      <h2>My profile</h2>
+      <p class="sub">This is what industry and academicians see when they look you up.</p>
+      <div class="app-card">
+        <div class="field-row">
+          <div><label class="form-label">Full name</label><input type="text" id="sa-name" class="form-input"></div>
+          <div><label class="form-label">Department</label>
+            <select id="sa-dept" class="form-input">
+              <option>Computer Science (CSE)</option>
+              <option>Information Technology (IT)</option>
+              <option>Electronics & Comm. (ECE)</option>
+              <option>Mechanical (MECH)</option>
+              <option>Civil</option>
+              <option>Electrical (EEE)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><label class="form-label">Year</label>
+            <select id="sa-year" class="form-input">
+              <option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option>
+            </select>
+          </div>
+          <div><label class="form-label">Target role</label>
+            <select id="sa-role" class="form-input">
+              <option>Backend Developer</option><option>Frontend Developer</option><option>Data Analyst</option>
+              <option>Embedded Systems Engineer</option><option>Site Engineer</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="saveStudentProfile()">Save profile</button>
+      </div>
+    </div>
+
+    <div class="app-panel" id="sa-personal">
+      <h2>Personal details</h2>
+      <p class="sub">Kept on your institution record only — never shown to recruiters.</p>
+      <div class="app-card">
+        <div class="field-row">
+          <div><label class="form-label">Email</label><input type="email" id="sa-email" class="form-input" placeholder="you@example.com"></div>
+          <div><label class="form-label">Phone number</label><input type="text" id="sa-phone" class="form-input" placeholder="10-digit number"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="form-label">Date of birth</label><input type="date" id="sa-dob" class="form-input"></div>
+          <div><label class="form-label">Address</label><input type="text" id="sa-address" class="form-input" placeholder="City, state"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="form-label">Guardian name</label><input type="text" id="sa-guardian-name" class="form-input"></div>
+          <div><label class="form-label">Guardian phone</label><input type="text" id="sa-guardian-phone" class="form-input"></div>
+        </div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="saveStudentPersonal()">Save details</button>
+      </div>
+    </div>
+
+    <div class="app-panel" id="sa-skills">
+      <h2>My skills</h2>
+      <p class="sub">Rate yourself honestly — this is what drives your recommendations and what industry sees as your match score.</p>
+      <div class="app-card">
+        <h4>Skill self-assessment</h4>
+        <div class="muted">Set by your institution's skill catalog</div>
+        <div id="sa-skills-list"></div>
+      </div>
+    </div>
+
+    <div class="app-panel" id="sa-tests">
+      <h2>Mock tests</h2>
+      <p class="sub">Practice tests set by your institution. Your best score is saved to your record.</p>
+      <div id="sa-tests-list"></div>
+      <div id="sa-test-runner" class="hidden"></div>
+    </div>
+
+    <div class="app-panel" id="sa-resume">
+      <h2>Resume</h2>
+      <p class="sub">Paste your resume text or a link to it — this is shown alongside your skill profile.</p>
+      <div class="app-card">
+        <label class="form-label">Resume link (optional)</label>
+        <input type="text" id="sa-resume-link" class="form-input" placeholder="e.g. drive.google.com/..." style="margin-bottom:14px;">
+        <label class="form-label">Resume summary</label>
+        <textarea id="sa-resume-text" class="form-input" placeholder="Paste your resume text, or a short summary of your experience..."></textarea>
+        <div style="margin-top:14px;display:flex;align-items:center;gap:14px;">
+          <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="saveResume()">Save resume</button>
+          <span class="muted" id="sa-resume-updated" style="margin:0;"></span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ RECRUITER APP ============ -->
+<div id="recruiter-screen" class="screen hidden app-shell">
+  <aside class="app-sidebar">
+    <div class="brand-mark">Confluence</div>
+    <div class="brand-sub">RECRUITER PORTAL</div>
+    <nav class="app-nav">
+      <button class="active" data-panel="re-dashboard" onclick="switchRecruiterPanel(this)">Dashboard</button>
+      <button data-panel="re-opening" onclick="switchRecruiterPanel(this)">Post an opening</button>
+      <button data-panel="re-candidates" onclick="switchRecruiterPanel(this)">Candidate pool</button>
+    </nav>
+    <div class="app-userbox">
+      <div class="u-name">Recruiter account</div>
+      <div class="u-sub" id="re-company-name">Industry partner</div>
+      <button onclick="recruiterLogout()">Log out</button>
+    </div>
+  </aside>
+  <main class="app-content">
+    <div class="app-panel active" id="re-dashboard">
+      <h2>Recruiter dashboard</h2>
+      <p class="sub">Turn skill requirements into a shortlist of verified candidates.</p>
+      <div class="metric-grid">
+        <div class="metric"><div class="value" id="re-candidate-count">0</div><div class="label">verified candidates</div></div>
+        <div class="metric"><div class="value" id="re-opening-count">0</div><div class="label">openings posted</div></div>
+        <div class="metric"><div class="value" id="re-top-match">—</div><div class="label">best current match</div></div>
+      </div>
+      <div class="app-card">
+        <h4>Active openings</h4>
+        <p class="muted">Post an opening to rank candidates against the skills you need.</p>
+        <div id="re-opening-list"></div>
+      </div>
+    </div>
+
+    <div class="app-panel" id="re-opening">
+      <h2>Post an opening</h2>
+      <p class="sub">Choose the skills that matter. Candidate matches are calculated from their self-assessments.</p>
+      <div class="app-card">
+        <div class="field-row">
+          <div><label class="form-label">Company</label><select id="re-company" class="form-input" onchange="renderRecruiterSkillChecks()"></select></div>
+          <div><label class="form-label">Role title</label><input id="re-title" class="form-input" value="Backend Developer Intern"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="form-label">Location</label><input id="re-location" class="form-input" value="Chennai / Hybrid"></div>
+          <div><label class="form-label">Engagement</label><select id="re-type" class="form-input"><option>Internship</option><option>Full-time</option><option>Part-time</option><option>Contract</option></select></div>
+        </div>
+        <div class="field-row">
+          <div><label class="form-label">Duration</label><input id="re-duration" class="form-input" value="6 months"></div>
+          <div></div>
+        </div>
+        <label class="form-label">Required skills</label>
+        <div class="muted" id="re-skill-hint" style="margin-bottom:10px;"></div>
+        <div id="re-skill-checks" class="check-grid"></div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;margin-top:18px;" onclick="publishOpening()">Publish opening</button>
+      </div>
+    </div>
+
+    <div class="app-panel" id="re-candidates">
+      <h2>Candidate pool</h2>
+      <p class="sub">Candidates are sorted by their match with the selected opening.</p>
+      <div class="app-card">
+        <div id="re-candidate-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ ADMIN APP ============ -->
+<div id="admin-screen" class="screen hidden app-shell">
+  <aside class="app-sidebar">
+    <div class="brand-mark">Confluence</div>
+    <div class="brand-sub">ADMIN CONSOLE</div>
+    <nav class="app-nav">
+      <button class="active" data-panel="ad-skills" onclick="switchAdminPanel(this)">Skill catalog</button>
+      <button data-panel="ad-tests" onclick="switchAdminPanel(this)">Mock tests</button>
+      <button data-panel="ad-students" onclick="switchAdminPanel(this)">Students</button>
+      <button data-panel="ad-admins" onclick="switchAdminPanel(this)">Admins</button>
+    </nav>
+    <div class="app-userbox">
+      <div class="u-name" id="ad-user-name">Institution Admin</div>
+      <div class="u-sub" id="ad-user-sub">Administrator account</div>
+      <button onclick="adminLogout()">Log out</button>
+    </div>
+  </aside>
+  <main class="app-content">
+
+    <div class="app-panel active" id="ad-skills">
+      <h2>Skill catalog</h2>
+      <p class="sub">The skills you add here are what every student rates themselves on, and what industry openings are matched against.</p>
+      <div class="app-card">
+        <h4>Skills required across the platform</h4>
+        <div id="ad-skill-list"></div>
+        <div class="add-skill-row">
+          <input type="text" id="ad-new-skill" class="form-input" placeholder="e.g. Cloud deployment (Azure)">
+          <button class="btn-primary btn-sm" style="border-radius:2px;white-space:nowrap;" onclick="addSkill()">+ Add skill</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-panel" id="ad-tests">
+      <div class="content-topbar">
+        <div><h2>Mock tests</h2><p class="sub" style="margin-bottom:0;">Tests students can take from their portal — add, edit, or remove questions.</p></div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="openTestModal()">+ Add test</button>
+      </div>
+      <div class="app-card">
+        <div id="ad-tests-list"></div>
+      </div>
+    </div>
+
+    <div class="app-panel" id="ad-students">
+      <div class="content-topbar">
+        <div><h2>Students</h2><p class="sub" style="margin-bottom:0;">Accounts that can sign in to the student portal.</p></div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="openStudentModal()">+ Add student</button>
+      </div>
+      <div class="app-card">
+        <table class="stu-table">
+          <thead><tr><th>Name</th><th>ID</th><th>Department</th><th>Year</th><th>Skills rated</th><th>Mock best</th><th></th></tr></thead>
+          <tbody id="ad-students-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="app-panel" id="ad-admins">
+      <div class="content-topbar">
+        <div><h2>Admin accounts</h2><p class="sub" style="margin-bottom:0;">Accounts that can sign in to this admin console.</p></div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="openAdminModal()">+ Add admin</button>
+      </div>
+      <div class="app-card">
+        <table class="stu-table">
+          <thead><tr><th>Name</th><th>ID</th><th></th></tr></thead>
+          <tbody id="ad-admins-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ ADMIN MODAL (admin) ============ -->
+<div id="admin-modal" class="modal-overlay hidden" onclick="if(event.target===this) closeAdminModal()">
+  <div class="modal-box">
+    <h3 id="admin-modal-title">Add admin</h3>
+    <form id="admin-form" onsubmit="return saveAdminRecord(event)">
+      <div class="login-field"><label>Full name</label><input type="text" id="af-name" required></div>
+      <div class="login-field"><label>Admin ID (login)</label><input type="text" id="af-id" placeholder="e.g. admin2" required></div>
+      <div class="login-field"><label>Password</label><input type="text" id="af-pass" placeholder="e.g. secure2026" required></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeAdminModal()">Cancel</button>
+        <button type="submit" class="btn-primary" style="border-radius:2px;">Save admin</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ STUDENT MODAL (admin) ============ -->
+<div id="student-modal" class="modal-overlay hidden" onclick="if(event.target===this) closeStudentModal()">
+  <div class="modal-box">
+    <h3 id="student-modal-title">Add student</h3>
+    <form id="student-form" onsubmit="return saveStudentRecord(event)">
+      <input type="hidden" id="sf-editing-id">
+      <div class="login-field"><label>Full name</label><input type="text" id="sf-name" required></div>
+      <div class="login-field"><label>Student ID (login)</label><input type="text" id="sf-id" placeholder="e.g. S004" required></div>
+      <div class="login-field"><label>Password</label><input type="text" id="sf-pass" placeholder="e.g. student123" required></div>
+      <div class="login-field"><label>Department</label>
+        <select id="sf-dept">
+          <option>Computer Science (CSE)</option><option>Information Technology (IT)</option>
+          <option>Electronics & Comm. (ECE)</option><option>Mechanical (MECH)</option>
+          <option>Civil</option><option>Electrical (EEE)</option>
+        </select>
+      </div>
+      <div class="login-field"><label>Year</label>
+        <select id="sf-year"><option>1st year</option><option>2nd year</option><option selected>3rd year</option><option>4th year</option></select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeStudentModal()">Cancel</button>
+        <button type="submit" class="btn-primary" style="border-radius:2px;">Save student</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MOCK TEST MODAL (admin) ============ -->
+<div id="test-modal" class="modal-overlay hidden" onclick="if(event.target===this) closeTestModal()">
+  <div class="modal-box" style="max-width:640px;max-height:86vh;overflow-y:auto;">
+    <h3 id="test-modal-title">Add mock test</h3>
+    <div class="login-field"><label>Test title</label><input type="text" id="tf-title" placeholder="e.g. DSA Fundamentals"></div>
+    <div class="login-field"><label>Description (optional)</label><input type="text" id="tf-desc" placeholder="Short description shown to students"></div>
+    <label class="form-label" style="display:block;margin-bottom:2px;">Questions</label>
+    <div id="tf-questions"></div>
+    <button type="button" class="btn-outline btn-sm" style="margin-top:12px;" onclick="addTestQuestion()">+ Add question</button>
+    <div class="modal-actions">
+      <button type="button" class="btn-outline" onclick="closeTestModal()">Cancel</button>
+      <button type="button" class="btn-primary" style="border-radius:2px;" onclick="saveMockTest()">Save test</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ================= API CLIENT ================= */
+  let authToken = sessionStorage.getItem('confluence_token') || null;
+  let currentUser = JSON.parse(sessionStorage.getItem('confluence_user') || 'null');
+
+  async function apiCall(endpoint, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    try {
+      const response = await fetch(endpoint, { ...options, headers });
+      if (response.status === 401) {
+        // Token invalid or expired
+        authToken = null;
+        currentUser = null;
+        sessionStorage.removeItem('confluence_token');
+        sessionStorage.removeItem('confluence_user');
+        showLanding();
+        showToast('Session expired. Please sign in again.');
+        throw new Error('Unauthorized');
+      }
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || data.message || 'API request failed');
+      }
+      return data;
+    } catch (err) {
+      if (err.message !== 'Unauthorized') {
+        showToast(err.message);
+      }
+      throw err;
+    }
+  }
+
+  const SKILL_LEVELS = ['Not started', 'Learning', 'Confident', 'Strong'];
+  let currentStudentData = null;
+  let currentSkillsCatalog = [];
+  let currentCompanySkills = {};
+  let recruiterOpenings = [];
+  let activeMockTest = null;
+  let activeMockAnswers = {};
+  let editingTestId = null;
+  let editingQuestions = [];
+  let editingStudentId = null;
+  let editingAdminId = null;
+  let loginRole = 'student';
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  function hideAllScreens() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  }
+
+  function showLanding() {
+    hideAllScreens();
+    document.getElementById('landing-screen').classList.remove('hidden');
+  }
+
+  function showLogin() {
+    hideAllScreens();
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('student-login-error').classList.remove('show');
+    document.getElementById('recruiter-login-error').classList.remove('show');
+    document.getElementById('admin-login-error').classList.remove('show');
+    setLoginRole('student');
+  }
+
+  function setLoginRole(role) {
+    loginRole = role;
+    document.getElementById('role-btn-student').classList.toggle('active', role === 'student');
+    document.getElementById('role-btn-recruiter').classList.toggle('active', role === 'recruiter');
+    document.getElementById('role-btn-admin').classList.toggle('active', role === 'admin');
+    document.getElementById('student-login-wrap').style.display = role === 'student' ? 'block' : 'none';
+    document.getElementById('recruiter-login-wrap').style.display = role === 'recruiter' ? 'block' : 'none';
+    document.getElementById('admin-login-wrap').style.display = role === 'admin' ? 'block' : 'none';
+  }
+
+  function fillStudentDemo() {
+    document.getElementById('sl-id').value = 'S001';
+    document.getElementById('sl-pass').value = 'student123';
+    document.getElementById('student-login-error').classList.remove('show');
+  }
+
+  function fillAdminDemo() {
+    document.getElementById('al-id').value = 'admin';
+    document.getElementById('al-pass').value = 'admin2026';
+    document.getElementById('admin-login-error').classList.remove('show');
+  }
+
+  function fillRecruiterDemo() {
+    document.getElementById('rl-id').value = 'recruiter';
+    document.getElementById('rl-pass').value = 'recruit2026';
+    document.getElementById('rl-company').value = 'Fintech Solutions Pvt Ltd';
+    document.getElementById('recruiter-login-error').classList.remove('show');
+  }
+
+  /* ================= AUTH HANDLERS ================= */
+  async function handleStudentLogin(e) {
+    e.preventDefault();
+    const id = document.getElementById('sl-id').value.trim();
+    const pass = document.getElementById('sl-pass').value.trim();
+    const err = document.getElementById('student-login-error');
+    try {
+      const res = await apiCall('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ id, password: pass, role: 'student' })
+      });
+      authToken = res.token;
+      currentUser = res.user;
+      sessionStorage.setItem('confluence_token', authToken);
+      sessionStorage.setItem('confluence_user', JSON.stringify(currentUser));
+      err.classList.remove('show');
+      hideAllScreens();
+      document.getElementById('student-screen').classList.remove('hidden');
+      await loadStudentApp();
+    } catch (e) {
+      err.classList.add('show');
+    }
+    return false;
+  }
+
+  async function handleRecruiterLogin(e) {
+    e.preventDefault();
+    const id = document.getElementById('rl-id').value.trim();
+    const pass = document.getElementById('rl-pass').value.trim();
+    const company = document.getElementById('rl-company').value.trim();
+    const err = document.getElementById('recruiter-login-error');
+    try {
+      const res = await apiCall('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ id, password: pass, role: 'recruiter', company })
+      });
+      authToken = res.token;
+      currentUser = res.user;
+      sessionStorage.setItem('confluence_token', authToken);
+      sessionStorage.setItem('confluence_user', JSON.stringify(currentUser));
+      err.classList.remove('show');
+      hideAllScreens();
+      document.getElementById('recruiter-screen').classList.remove('hidden');
+      document.getElementById('re-company-name').textContent = company || 'Industry Partner';
+      await loadRecruiterApp();
+    } catch (e) {
+      err.classList.add('show');
+    }
+    return false;
+  }
+
+  async function handleAdminLogin(e) {
+    e.preventDefault();
+    const id = document.getElementById('al-id').value.trim();
+    const pass = document.getElementById('al-pass').value.trim();
+    const err = document.getElementById('admin-login-error');
+    try {
+      const res = await apiCall('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ id, password: pass, role: 'admin' })
+      });
+      authToken = res.token;
+      currentUser = res.user;
+      sessionStorage.setItem('confluence_token', authToken);
+      sessionStorage.setItem('confluence_user', JSON.stringify(currentUser));
+      err.classList.remove('show');
+      hideAllScreens();
+      document.getElementById('admin-screen').classList.remove('hidden');
+      await loadAdminApp();
+    } catch (e) {
+      err.classList.add('show');
+    }
+    return false;
+  }
+
+  async function logout() {
+    try {
+      await apiCall('/api/auth/logout', { method: 'POST' });
+    } catch(e) {}
+    authToken = null;
+    currentUser = null;
+    sessionStorage.removeItem('confluence_token');
+    sessionStorage.removeItem('confluence_user');
+    showLanding();
+    showToast('Logged out');
+  }
+
+  const studentLogout = logout;
+  const recruiterLogout = logout;
+  const adminLogout = logout;
+
+  /* ================= STUDENT PORTAL ================= */
+  function switchStudentPanel(btn) {
+    document.querySelectorAll('#student-screen .app-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#student-screen .app-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.panel).classList.add('active');
+    if (btn.dataset.panel === 'sa-tests') renderStudentMockTests();
+  }
+
+  async function loadStudentApp() {
+    try {
+      const data = await apiCall('/api/student/me');
+      currentStudentData = data;
+      document.getElementById('sa-user-name').textContent = data.name;
+      document.getElementById('sa-user-sub').textContent = data.id;
+      document.getElementById('sa-name').value = data.name;
+      document.getElementById('sa-dept').value = data.dept;
+      document.getElementById('sa-year').value = data.year;
+      document.getElementById('sa-role').value = data.role;
+      document.getElementById('sa-resume-link').value = data.resumeLink || '';
+      document.getElementById('sa-resume-text').value = data.resumeText || '';
+      document.getElementById('sa-resume-updated').textContent = data.resumeUpdated ? ('Last updated ' + data.resumeUpdated) : 'Not saved yet';
+
+      const p = data.personal || {};
+      document.getElementById('sa-email').value = p.email || '';
+      document.getElementById('sa-phone').value = p.phone || '';
+      document.getElementById('sa-dob').value = p.dob || '';
+      document.getElementById('sa-address').value = p.address || '';
+      document.getElementById('sa-guardian-name').value = p.guardianName || '';
+      document.getElementById('sa-guardian-phone').value = p.guardianPhone || '';
+
+      renderStudentSkills();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function saveStudentProfile() {
+    const name = document.getElementById('sa-name').value.trim();
+    const dept = document.getElementById('sa-dept').value;
+    const year = document.getElementById('sa-year').value;
+    const role = document.getElementById('sa-role').value;
+    await apiCall('/api/student/me/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ name, dept, year, role })
+    });
+    currentStudentData.name = name;
+    currentStudentData.dept = dept;
+    currentStudentData.year = year;
+    currentStudentData.role = role;
+    document.getElementById('sa-user-name').textContent = name;
+    showToast('Profile saved');
+  }
+
+  async function saveStudentPersonal() {
+    const payload = {
+      email: document.getElementById('sa-email').value.trim(),
+      phone: document.getElementById('sa-phone').value.trim(),
+      dob: document.getElementById('sa-dob').value,
+      address: document.getElementById('sa-address').value.trim(),
+      guardianName: document.getElementById('sa-guardian-name').value.trim(),
+      guardianPhone: document.getElementById('sa-guardian-phone').value.trim()
+    };
+    await apiCall('/api/student/me/personal', {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+    currentStudentData.personal = payload;
+    showToast('Personal details saved');
+  }
+
+  function renderStudentSkills() {
+    const skills = currentStudentData.skills || {};
+    const skillNames = Object.keys(skills);
+    document.getElementById('sa-skills-list').innerHTML = skillNames.length ? skillNames.map(sk => `
+      <div class="skill-row">
+        <span class="name">${sk}</span>
+        <select class="skill-select" onchange="updateStudentSkill('${sk.replace(/'/g, "\\'")}', this.value)">
+          ${SKILL_LEVELS.map(lvl => `<option ${skills[sk] === lvl ? 'selected' : ''}>${lvl}</option>`).join('')}
+        </select>
+      </div>`).join('') : '<p class="muted">No skills in catalog yet.</p>';
+  }
+
+  async function updateStudentSkill(skill, level) {
+    await apiCall('/api/student/me/skill', {
+      method: 'PUT',
+      body: JSON.stringify({ skill, level })
+    });
+    currentStudentData.skills[skill] = level;
+    showToast('Skill updated');
+  }
+
+  async function saveResume() {
+    const resumeLink = document.getElementById('sa-resume-link').value.trim();
+    const resumeText = document.getElementById('sa-resume-text').value.trim();
+    const res = await apiCall('/api/student/me/resume', {
+      method: 'PUT',
+      body: JSON.stringify({ resumeLink, resumeText })
+    });
+    currentStudentData.resumeLink = resumeLink;
+    currentStudentData.resumeText = resumeText;
+    currentStudentData.resumeUpdated = res.resumeUpdated;
+    document.getElementById('sa-resume-updated').textContent = 'Last updated ' + res.resumeUpdated;
+    showToast('Resume saved');
+  }
+
+  async function renderStudentMockTests() {
+    document.getElementById('sa-test-runner').classList.add('hidden');
+    document.getElementById('sa-test-runner').innerHTML = '';
+    document.getElementById('sa-tests-list').classList.remove('hidden');
+
+    const tests = await apiCall('/api/student/me/mock-tests');
+    const attempts = currentStudentData.mockAttempts || {};
+
+    document.getElementById('sa-tests-list').innerHTML = tests.length ? tests.map(t => {
+      const attempt = attempts[t.id];
+      const pct = attempt ? Math.round((attempt.score / attempt.total) * 100) : null;
+      return `
+      <div class="app-card">
+        <h4>${t.title}</h4>
+        <div class="muted">${t.description ? t.description + ' · ' : ''}${t.questionCount} question${t.questionCount === 1 ? '' : 's'}</div>
+        ${attempt ? `<div class="gap-row" style="border-top:none;padding-top:0;"><span>Best score</span><span class="pill ${pct >= 50 ? 'strong' : 'gap'}">${attempt.score}/${attempt.total} (${pct}%)</span></div>` : ''}
+        <button class="btn-primary btn-sm" style="border-radius:2px;margin-top:${attempt ? '12px' : '2px'};" onclick="startMockTest('${t.id}')">${attempt ? 'Retake test' : 'Start test'}</button>
+      </div>`;
+    }).join('') : '<div class="app-card"><p class="muted" style="margin:0;">No mock tests available yet — check back soon.</p></div>';
+  }
+
+  async function startMockTest(id) {
+    const test = await apiCall(`/api/student/me/mock-tests/${id}`);
+    if (!test || !test.questions.length) {
+      showToast('This test has no questions yet');
+      return;
+    }
+    activeMockTest = test;
+    activeMockAnswers = {};
+    document.getElementById('sa-tests-list').classList.add('hidden');
+    const runner = document.getElementById('sa-test-runner');
+    runner.classList.remove('hidden');
+    runner.innerHTML = `
+      <div class="app-card">
+        <h4>${test.title}</h4>
+        <div class="muted">Answer every question, then submit.</div>
+        ${test.questions.map((q, qi) => `
+          <div class="question-block">
+            <div class="question-text">${qi + 1}. ${q.text}</div>
+            <div class="options">
+              ${q.options.map((opt, oi) => opt ? `
+                <label class="option-row">
+                  <input type="radio" name="mock-q-${qi}" value="${oi}" onchange="activeMockAnswers[${qi}] = ${oi}">
+                  <span>${opt}</span>
+                </label>` : '').join('')}
+            </div>
+          </div>`).join('')}
+        <div class="modal-actions" style="justify-content:flex-start;margin-top:18px;">
+          <button class="btn-primary btn-sm" style="border-radius:2px;" onclick="submitMockTest()">Submit test</button>
+          <button class="btn-outline" onclick="renderStudentMockTests()">Cancel</button>
+        </div>
+      </div>`;
+  }
+
+  async function submitMockTest() {
+    const t = activeMockTest;
+    if (!t) return;
+    const unanswered = t.questions.some((q, qi) => activeMockAnswers[qi] === undefined);
+    if (unanswered) {
+      showToast('Answer every question before submitting');
+      return;
+    }
+    const res = await apiCall(`/api/student/me/mock-tests/${t.id}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ answers: activeMockAnswers })
+    });
+    currentStudentData.mockAttempts = currentStudentData.mockAttempts || {};
+    currentStudentData.mockAttempts[t.id] = { score: res.score, total: res.total, date: res.date };
+    document.getElementById('sa-test-runner').innerHTML = `
+      <div class="app-card">
+        <h4>${t.title} — result</h4>
+        <div class="gap-row" style="border-top:none;"><span>Score</span><span class="pill ${res.percentage >= 50 ? 'strong' : 'gap'}">${res.score} / ${res.total} (${res.percentage}%)</span></div>
+        <button class="btn-primary btn-sm" style="border-radius:2px;margin-top:14px;" onclick="renderStudentMockTests()">Back to tests</button>
+      </div>`;
+    activeMockTest = null;
+    showToast('Test submitted');
+  }
+
+  /* ================= RECRUITER PORTAL ================= */
+  function switchRecruiterPanel(btn) {
+    document.querySelectorAll('#recruiter-screen .app-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#recruiter-screen .app-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.panel).classList.add('active');
+    if (btn.dataset.panel === 're-candidates') renderRecruiterCandidates();
+  }
+
+  async function loadRecruiterApp() {
+    currentCompanySkills = await apiCall('/api/recruiter/company-skills');
+    currentSkillsCatalog = await apiCall('/api/admin/skills');
+
+    const companySelect = document.getElementById('re-company');
+    companySelect.innerHTML = '';
+    const companies = Object.keys(currentCompanySkills);
+    const userCompany = currentUser?.company || 'Fintech Solutions Pvt Ltd';
+    if (!companies.includes(userCompany)) {
+      companies.unshift(userCompany);
+    }
+    companies.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      companySelect.appendChild(opt);
+    });
+    companySelect.value = userCompany;
+
+    renderRecruiterSkillChecks();
+    await updateRecruiterMetricsAndOpenings();
+    await renderRecruiterCandidates();
+  }
+
+  function renderRecruiterSkillChecks() {
+    const company = document.getElementById('re-company').value;
+    const companyRequired = currentCompanySkills[company] || [];
+    const preChecked = companyRequired.length ? companyRequired : (currentSkillsCatalog.slice(0, 3));
+    document.getElementById('re-skill-hint').textContent = companyRequired.length
+      ? `Pre-checked: skills ${company} typically requires`
+      : 'Pick the skills that matter for this opening';
+
+    document.getElementById('re-skill-checks').innerHTML = currentSkillsCatalog.map(sk => `
+      <label class="skill-check">
+        <input type="checkbox" value="${sk.replace(/"/g, '&quot;')}" ${preChecked.includes(sk) ? 'checked' : ''}>
+        <span>${sk}</span>
+      </label>
+    `).join('');
+  }
+
+  async function updateRecruiterMetricsAndOpenings() {
+    const metrics = await apiCall('/api/recruiter/metrics');
+    document.getElementById('re-candidate-count').textContent = metrics.candidateCount;
+    document.getElementById('re-opening-count').textContent = metrics.openingCount;
+    document.getElementById('re-top-match').textContent = metrics.openingCount ? `${metrics.topMatch}%` : '—';
+
+    recruiterOpenings = await apiCall('/api/recruiter/openings');
+    document.getElementById('re-opening-list').innerHTML = recruiterOpenings.length ? recruiterOpenings.map(opening => `
+      <div class="listing">
+        <strong>${opening.title}</strong> · ${opening.company ? opening.company + ' · ' : ''}${opening.type} · ${opening.location}
+        <div class="tags">${opening.skills.map(skill => `<span class="tag">${skill}</span>`).join('')}</div>
+      </div>
+    `).join('') : '<p class="muted">No openings posted yet.</p>';
+  }
+
+  async function renderRecruiterCandidates() {
+    const candidates = await apiCall('/api/recruiter/candidates');
+    document.getElementById('re-candidate-list').innerHTML = candidates.length ? candidates.map(candidate => `
+      <div class="match">
+        <span><strong>${candidate.name}</strong> — ${candidate.deptAbbr}, ${candidate.year}<br>
+        <small class="muted">${candidate.ratedSkills}/${candidate.catalogTotal} skills rated · ${candidate.role}</small></span>
+        <span class="match-score">${candidate.matchScore}% match</span>
+      </div>
+      <div class="match-bar"><span style="width:${candidate.matchScore}%"></span></div>
+    `).join('') : '<p class="muted">No candidates registered yet.</p>';
+  }
+
+  async function publishOpening() {
+    const company = document.getElementById('re-company').value;
+    const title = document.getElementById('re-title').value.trim();
+    const location = document.getElementById('re-location').value.trim();
+    const type = document.getElementById('re-type').value;
+    const duration = document.getElementById('re-duration').value.trim();
+    const skills = [...document.querySelectorAll('#re-skill-checks input:checked')].map(input => input.value);
+
+    if (!company || !title || !location || !skills.length) {
+      showToast('Add a company, title, location, and at least one skill');
+      return;
+    }
+
+    await apiCall('/api/recruiter/openings', {
+      method: 'POST',
+      body: JSON.stringify({ company, title, location, type, duration, skills })
+    });
+
+    await updateRecruiterMetricsAndOpenings();
+    showToast('Opening published');
+    document.querySelector('#recruiter-screen .app-nav button[data-panel="re-dashboard"]').click();
+  }
+
+  /* ================= ADMIN CONSOLE ================= */
+  function switchAdminPanel(btn) {
+    document.querySelectorAll('#admin-screen .app-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#admin-screen .app-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  }
+
+  async function loadAdminApp() {
+    document.getElementById('ad-user-name').textContent = currentUser ? currentUser.name : 'Admin';
+    document.getElementById('ad-user-sub').textContent = currentUser ? currentUser.id : 'admin';
+    await Promise.all([
+      renderSkillCatalog(),
+      renderMockTestCatalog(),
+      renderStudentsTable(),
+      renderAdminAccountsTable()
+    ]);
+  }
+
+  async function renderSkillCatalog() {
+    currentSkillsCatalog = await apiCall('/api/admin/skills');
+    document.getElementById('ad-skill-list').innerHTML = currentSkillsCatalog.length ? currentSkillsCatalog.map(sk => `
+      <div class="catalog-row">
+        <div class="catalog-edit">
+          <input id="skill-${encodeURIComponent(sk)}" class="form-input" value="${sk.replace(/"/g, '&quot;')}">
+          <button class="btn-outline btn-sm" onclick="renameSkill('${sk.replace(/'/g, "\\'")}')">Save</button>
+        </div>
+        <button class="icon-x" onclick="removeSkill('${sk.replace(/'/g, "\\'")}')">Remove</button>
+      </div>`).join('') : '<p class="muted" style="margin:0;">No skills yet — add the first one below.</p>';
+  }
+
+  async function renameSkill(oldSkill) {
+    const input = document.getElementById('skill-' + encodeURIComponent(oldSkill));
+    const nextSkill = input.value.trim();
+    if (!nextSkill) { showToast('Skill name cannot be empty'); return; }
+    await apiCall(`/api/admin/skills/${encodeURIComponent(oldSkill)}`, {
+      method: 'PUT',
+      body: JSON.stringify({ newName: nextSkill })
+    });
+    await renderSkillCatalog();
+    showToast('Skill updated');
+  }
+
+  async function addSkill() {
+    const input = document.getElementById('ad-new-skill');
+    const val = input.value.trim();
+    if (!val) return;
+    await apiCall('/api/admin/skills', {
+      method: 'POST',
+      body: JSON.stringify({ name: val })
+    });
+    input.value = '';
+    await renderSkillCatalog();
+    showToast('Skill added to catalog');
+  }
+
+  async function removeSkill(sk) {
+    if (!confirm(`Remove "${sk}" from catalog?`)) return;
+    await apiCall(`/api/admin/skills/${encodeURIComponent(sk)}`, {
+      method: 'DELETE'
+    });
+    await renderSkillCatalog();
+    showToast('Skill removed');
+  }
+
+  /* Admin Mock Tests */
+  let adminMockTests = [];
+  async function renderMockTestCatalog() {
+    adminMockTests = await apiCall('/api/admin/mock-tests');
+    document.getElementById('ad-tests-list').innerHTML = adminMockTests.length ? adminMockTests.map(t => `
+      <div class="catalog-row">
+        <div>
+          <strong>${t.title}</strong>
+          <div class="muted" style="margin:0;">${t.questions.length} question${t.questions.length === 1 ? '' : 's'}${t.description ? ' · ' + t.description : ''}</div>
+        </div>
+        <div class="row-actions">
+          <button onclick="openTestModal('${t.id}')">Edit</button>
+          <button onclick="deleteMockTest('${t.id}')">Remove</button>
+        </div>
+      </div>`).join('') : '<p class="muted" style="margin:0;">No mock tests yet — add the first one below.</p>';
+  }
+
+  function openTestModal(id) {
+    document.getElementById('test-modal-title').textContent = id ? 'Edit mock test' : 'Add mock test';
+    if (id) {
+      const t = adminMockTests.find(x => x.id === id);
+      editingTestId = id;
+      document.getElementById('tf-title').value = t.title;
+      document.getElementById('tf-desc').value = t.description || '';
+      editingQuestions = t.questions.map(q => ({ id: q.id, text: q.text, options: [...q.options], correct: q.correct }));
+    } else {
+      editingTestId = null;
+      document.getElementById('tf-title').value = '';
+      document.getElementById('tf-desc').value = '';
+      editingQuestions = [{ text: '', options: ['', '', '', ''], correct: 0 }];
+    }
+    renderTestQuestionEditor();
+    document.getElementById('test-modal').classList.remove('hidden');
+  }
+
+  function closeTestModal() {
+    document.getElementById('test-modal').classList.add('hidden');
+    editingTestId = null;
+    editingQuestions = [];
+  }
+
+  function renderTestQuestionEditor() {
+    document.getElementById('tf-questions').innerHTML = editingQuestions.length ? editingQuestions.map((q, qi) => `
+      <div class="question-editor">
+        <div class="question-editor-head">
+          <span class="muted" style="margin:0;">Question ${qi + 1}</span>
+          <button type="button" class="icon-x" onclick="removeTestQuestion(${qi})">Remove</button>
+        </div>
+        <input type="text" class="form-input" style="margin-bottom:8px;" placeholder="Question text"
+          value="${(q.text || '').replace(/"/g, '&quot;')}" oninput="updateTestQuestionText(${qi}, this.value)">
+        <div class="option-editor-grid">
+          ${q.options.map((opt, oi) => `
+            <label class="option-editor-row">
+              <input type="radio" name="correct-${qi}" ${q.correct === oi ? 'checked' : ''} onchange="updateTestQuestionCorrect(${qi}, ${oi})">
+              <input type="text" class="form-input" placeholder="Option ${oi + 1}"
+                value="${(opt || '').replace(/"/g, '&quot;')}" oninput="updateTestQuestionOption(${qi}, ${oi}, this.value)">
+            </label>`).join('')}
+        </div>
+      </div>`).join('') : '<p class="muted" style="margin:0;">No questions yet — add the first one below.</p>';
+  }
+
+  function addTestQuestion() {
+    editingQuestions.push({ text: '', options: ['', '', '', ''], correct: 0 });
+    renderTestQuestionEditor();
+  }
+
+  function removeTestQuestion(qi) {
+    editingQuestions.splice(qi, 1);
+    renderTestQuestionEditor();
+  }
+
+  function updateTestQuestionText(qi, val) { editingQuestions[qi].text = val; }
+  function updateTestQuestionOption(qi, oi, val) { editingQuestions[qi].options[oi] = val; }
+  function updateTestQuestionCorrect(qi, oi) { editingQuestions[qi].correct = oi; }
+
+  async function saveMockTest() {
+    const title = document.getElementById('tf-title').value.trim();
+    const desc = document.getElementById('tf-desc').value.trim();
+    if (!title) { showToast('Give the test a title'); return; }
+    const cleanQuestions = editingQuestions
+      .map(q => ({ text: q.text.trim(), options: q.options.map(o => o.trim()), correct: q.correct, id: q.id }))
+      .filter(q => q.text && q.options.filter(o => o).length >= 2);
+
+    if (!cleanQuestions.length) {
+      showToast('Add at least one complete question (text + 2 options)');
+      return;
+    }
+
+    if (editingTestId) {
+      await apiCall(`/api/admin/mock-tests/${editingTestId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ title, description: desc, questions: cleanQuestions })
+      });
+    } else {
+      await apiCall('/api/admin/mock-tests', {
+        method: 'POST',
+        body: JSON.stringify({ title, description: desc, questions: cleanQuestions })
+      });
+    }
+    closeTestModal();
+    await renderMockTestCatalog();
+    showToast(editingTestId ? 'Test updated' : 'Test added');
+  }
+
+  async function deleteMockTest(id) {
+    const t = adminMockTests.find(x => x.id === id);
+    if (!t) return;
+    if (!confirm(`Remove "${t.title}"? This also clears any saved student scores for it.`)) return;
+    await apiCall(`/api/admin/mock-tests/${id}`, { method: 'DELETE' });
+    await renderMockTestCatalog();
+    await renderStudentsTable();
+    showToast('Test removed');
+  }
+
+  /* Admin Students Management */
+  let adminStudentsList = [];
+  async function renderStudentsTable() {
+    adminStudentsList = await apiCall('/api/admin/students');
+    document.getElementById('ad-students-body').innerHTML = adminStudentsList.map(s => `
+      <tr>
+        <td>${s.name}</td>
+        <td class="mono">${s.id}</td>
+        <td>${s.deptAbbr}</td>
+        <td>${s.year}</td>
+        <td>${s.ratedSkills} / ${s.totalSkills}</td>
+        <td>${s.bestPct === null ? '—' : s.bestPct + '%'}</td>
+        <td class="row-actions">
+          <button onclick="openStudentModal('${s.id}')">Edit</button>
+          <button onclick="deleteStudentRecord('${s.id}')">Remove</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function openStudentModal(id) {
+    const form = document.getElementById('student-form');
+    form.reset();
+    if (id) {
+      const s = adminStudentsList.find(x => x.id === id);
+      editingStudentId = id;
+      document.getElementById('student-modal-title').textContent = 'Edit student';
+      document.getElementById('sf-name').value = s.name;
+      document.getElementById('sf-id').value = s.id;
+      document.getElementById('sf-id').disabled = true;
+      document.getElementById('sf-pass').value = s.pass;
+      document.getElementById('sf-dept').value = s.dept;
+      document.getElementById('sf-year').value = s.year;
+    } else {
+      editingStudentId = null;
+      document.getElementById('student-modal-title').textContent = 'Add student';
+      document.getElementById('sf-id').disabled = false;
+    }
+    document.getElementById('student-modal').classList.remove('hidden');
+  }
+
+  function closeStudentModal() {
+    document.getElementById('student-modal').classList.add('hidden');
+  }
+
+  async function saveStudentRecord(e) {
+    e.preventDefault();
+    const name = document.getElementById('sf-name').value.trim();
+    const id = document.getElementById('sf-id').value.trim();
+    const pass = document.getElementById('sf-pass').value.trim();
+    const dept = document.getElementById('sf-dept').value;
+    const year = document.getElementById('sf-year').value;
+
+    if (editingStudentId) {
+      await apiCall(`/api/admin/students/${editingStudentId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ name, password: pass, dept, year })
+      });
+    } else {
+      await apiCall('/api/admin/students', {
+        method: 'POST',
+        body: JSON.stringify({ id, password: pass, name, dept, year })
+      });
+    }
+    closeStudentModal();
+    await renderStudentsTable();
+    showToast(editingStudentId ? 'Student updated' : 'Student added');
+    return false;
+  }
+
+  async function deleteStudentRecord(id) {
+    const s = adminStudentsList.find(x => x.id === id);
+    if (!s) return;
+    if (!confirm(`Remove ${s.name} (${s.id})? This deletes their account and skill data.`)) return;
+    await apiCall(`/api/admin/students/${id}`, { method: 'DELETE' });
+    await renderStudentsTable();
+    showToast('Student removed');
+  }
+
+  /* Admin Accounts Management */
+  let adminAccountsList = [];
+  async function renderAdminAccountsTable() {
+    adminAccountsList = await apiCall('/api/admin/admins');
+    document.getElementById('ad-admins-body').innerHTML = adminAccountsList.map(a => `
+      <tr>
+        <td>${a.name}</td>
+        <td class="mono">${a.id}</td>
+        <td class="row-actions">
+          <button onclick="openAdminModal('${a.id}')">Edit</button>
+          <button onclick="deleteAdminRecord('${a.id}')">Remove</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function openAdminModal(id) {
+    const form = document.getElementById('admin-form');
+    form.reset();
+    if (id) {
+      const a = adminAccountsList.find(x => x.id === id);
+      editingAdminId = id;
+      document.getElementById('admin-modal-title').textContent = 'Edit admin';
+      document.getElementById('af-name').value = a.name;
+      document.getElementById('af-id').value = a.id;
+      document.getElementById('af-id').disabled = true;
+      document.getElementById('af-pass').value = a.pass;
+    } else {
+      editingAdminId = null;
+      document.getElementById('admin-modal-title').textContent = 'Add admin';
+      document.getElementById('af-id').disabled = false;
+    }
+    document.getElementById('admin-modal').classList.remove('hidden');
+  }
+
+  function closeAdminModal() {
+    document.getElementById('admin-modal').classList.add('hidden');
+  }
+
+  async function saveAdminRecord(e) {
+    e.preventDefault();
+    const name = document.getElementById('af-name').value.trim();
+    const id = document.getElementById('af-id').value.trim();
+    const pass = document.getElementById('af-pass').value.trim();
+
+    if (editingAdminId) {
+      await apiCall(`/api/admin/admins/${editingAdminId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ name, password: pass })
+      });
+      if (currentUser && currentUser.id === editingAdminId) {
+        currentUser.name = name;
+        sessionStorage.setItem('confluence_user', JSON.stringify(currentUser));
+        document.getElementById('ad-user-name').textContent = name;
+      }
+    } else {
+      await apiCall('/api/admin/admins', {
+        method: 'POST',
+        body: JSON.stringify({ id, password: pass, name })
+      });
+    }
+    closeAdminModal();
+    await renderAdminAccountsTable();
+    showToast(editingAdminId ? 'Admin updated' : 'Admin added');
+    return false;
+  }
+
+  async function deleteAdminRecord(id) {
+    const a = adminAccountsList.find(x => x.id === id);
+    if (!a) return;
+    if (!confirm(`Remove admin ${a.name} (${a.id})?`)) return;
+    await apiCall(`/api/admin/admins/${id}`, { method: 'DELETE' });
+    await renderAdminAccountsTable();
+    showToast('Admin removed');
+  }
+
+  /* Role tabs on landing page */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('stu-update').addEventListener('click', () => {
+    showToast('Profile updated in preview');
+  });
+
+  // Check existing session on load
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (authToken && currentUser) {
+      try {
+        if (currentUser.role === 'student') {
+          hideAllScreens();
+          document.getElementById('student-screen').classList.remove('hidden');
+          await loadStudentApp();
+        } else if (currentUser.role === 'recruiter') {
+          hideAllScreens();
+          document.getElementById('recruiter-screen').classList.remove('hidden');
+          document.getElementById('re-company-name').textContent = currentUser.company || 'Industry Partner';
+          await loadRecruiterApp();
+        } else if (currentUser.role === 'admin') {
+          hideAllScreens();
+          document.getElementById('admin-screen').classList.remove('hidden');
+          await loadAdminApp();
+        }
+      } catch (err) {
+        showLanding();
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
